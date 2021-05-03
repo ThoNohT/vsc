@@ -1,0 +1,60 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: c08fbe7bdec65c4906e3d3e7754b852f02798622debc1eaff40ffb6638467e89
+
+name:           vsc
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/vsc#readme>
+homepage:       https://github.com/githubuser/vsc#readme
+bug-reports:    https://github.com/githubuser/vsc/issues
+author:         ThoNohT
+maintainer:     e.c.p.bataille@gmail.com
+copyright:      2021 ThoNohT
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/vsc
+
+library
+  other-modules:
+      Paths_vsc
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable vsc-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_vsc
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , vsc
+  default-language: Haskell2010
+
+test-suite vsc-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_vsc
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , vsc
+  default-language: Haskell2010
