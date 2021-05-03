@@ -21,6 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/ThoN
 
 dependencies:
 - base >= 4.7 && < 5
+- system-filepath
 
 executables:
   vsc:
@@ -30,6 +31,8 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    default-extensions:
+        - OverloadedStrings
 
 tests:
   vsc-test:
