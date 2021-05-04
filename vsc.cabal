@@ -33,7 +33,19 @@ executable vsc
       Paths_vsc
   hs-source-dirs:
       app
-  default-extensions: OverloadedStrings
+  default-extensions:
+      GADTs
+    , StandaloneDeriving
+    , OverloadedStrings
+    , ScopedTypeVariables
+    , TypeApplications
+    , RankNTypes
+    , ExplicitForAll
+    , DataKinds
+    , TypeFamilies
+    , FlexibleInstances
+    , FlexibleContexts
+    , GeneralizedNewtypeDeriving
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
