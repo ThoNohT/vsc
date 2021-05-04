@@ -2,6 +2,7 @@ module Main where
 
 import Control.Arrow ((>>>))
 import Control.Monad (forM_)
+import Control.Monad.Reader (MonadIO (liftIO), MonadReader (ask), ReaderT (runReaderT))
 import Data.Function ((&))
 import Data.Functor ((<&>))
 import Data.List (find)
@@ -17,27 +18,30 @@ data Task
     | Quit
     | StartProfile Text
 
+-- The runtime used in this application, providing read access to the base path.
+type VscRuntime = ReaderT FP.FilePath IO
+
 main :: IO ()
 main = do
     basePath <- getBasePath
-    ensureBasePathExists basePath
-    task <- pickTask basePath
 
-    case task of
-        Quit -> pure ()
-        NewProfile -> putStrLn "Creating a new profile."
-        StartProfile name -> putStrLn $ printf "Starting profile %s." name
+    flip runReaderT basePath $ do
+        ensureBasePathExists
+        task <- pickTask
 
--- Returns the name of the folder or file represented by the file path, without the leading path to it.
-baseName :: FP.FilePath -> Text
-baseName = encodeString >>> T.pack >>> T.split (\x -> x == '/' || x == '\\') >>> last
+        liftIO $ case task of
+            Quit -> pure ()
+            NewProfile -> putStrLn "Creating a new profile."
+            StartProfile name -> putStrLn $ printf "Starting profile %s." name
 
 -- Picks a task and returns it.
-pickTask :: FP.FilePath -> IO Task
-pickTask basePath = do
-    subDirs <- listDirectory basePath <&> filter (not . T.isPrefixOf "." . baseName) <&> zip [1 ..]
-    subDirs & forM_ $ \(idx, sd) -> putStrLn $ printf "%d: %s" idx (baseName sd)
-    readTaskFromInput subDirs
+pickTask :: VscRuntime Task
+pickTask = do
+    basePath <- ask
+    liftIO $ do
+        subDirs <- listDirectory basePath <&> filter (not . T.isPrefixOf "." . baseName) <&> zip [1 ..]
+        subDirs & forM_ $ \(idx, sd) -> putStrLn $ printf "%d: %s" idx (baseName sd)
+        readTaskFromInput subDirs
 
 -- Reads a task from the console, if a task could not be parsed from the input, the task is asked again.
 readTaskFromInput :: [(Int, FP.FilePath)] -> IO Task
@@ -60,11 +64,17 @@ getBasePath :: IO FP.FilePath
 getBasePath = getHomeDirectory <&> flip FP.append (fromText ".code-profiles")
 
 -- Checks whether the base path exists. If it doesn't, it is created.
-ensureBasePathExists :: FP.FilePath -> IO ()
-ensureBasePathExists basePath = do
-    isDir <- isDirectory basePath
-    if not isDir
-        then do
-            putStrLn "Creating base path"
-            createTree basePath
-        else pure ()
+ensureBasePathExists :: VscRuntime ()
+ensureBasePathExists = do
+    basePath <- ask
+    liftIO $ do
+        isDir <- isDirectory basePath
+        if not isDir
+            then do
+                putStrLn "Creating base path"
+                createTree basePath
+            else pure ()
+
+-- Returns the name of the folder or file represented by the file path, without the leading path to it.
+baseName :: FP.FilePath -> Text
+baseName = encodeString >>> T.pack >>> T.split (\x -> x == '/' || x == '\\') >>> last

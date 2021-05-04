@@ -40,6 +40,7 @@ executable vsc
     , system-filepath
     , text
     , system-fileio
+    , mtl
   default-language: Haskell2010
 
 test-suite vsc-test
