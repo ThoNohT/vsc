@@ -48,7 +48,7 @@ executables:
     - system-filepath
     - text
     - system-fileio
-    - mtl
+    - containers
 
 tests:
   vsc-test:
