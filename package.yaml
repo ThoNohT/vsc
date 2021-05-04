@@ -32,7 +32,23 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     default-extensions:
-        - OverloadedStrings
+    - GADTs
+    - StandaloneDeriving
+    - OverloadedStrings
+    - ScopedTypeVariables
+    - TypeApplications
+    - RankNTypes
+    - ExplicitForAll
+    - DataKinds
+    - TypeFamilies
+    - FlexibleInstances
+    - FlexibleContexts
+    - GeneralizedNewtypeDeriving
+    dependencies:
+    - system-filepath
+    - text
+    - system-fileio
+    - mtl
 
 tests:
   vsc-test:

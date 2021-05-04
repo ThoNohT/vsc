@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 77305406e644e97063f7d27ac5a8881294cd268f9feb6189d2b6c84d2cef1c08
+-- hash: b6510d6af59fecc1d11b5ed4ebdb1ee093cb26295c9a46a5a68d45b1a9ad1b81
 
 name:           vsc
 version:        0.1.0.0
@@ -33,26 +33,14 @@ executable vsc
       Paths_vsc
   hs-source-dirs:
       app
-  default-extensions:
-      GADTs
-    , StandaloneDeriving
-    , OverloadedStrings
-    , ScopedTypeVariables
-    , TypeApplications
-    , RankNTypes
-    , ExplicitForAll
-    , DataKinds
-    , TypeFamilies
-    , FlexibleInstances
-    , FlexibleContexts
-    , GeneralizedNewtypeDeriving
+  default-extensions: GADTs StandaloneDeriving OverloadedStrings ScopedTypeVariables TypeApplications RankNTypes ExplicitForAll DataKinds TypeFamilies FlexibleInstances FlexibleContexts GeneralizedNewtypeDeriving
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , mtl
+    , system-fileio
     , system-filepath
     , text
-    , system-fileio
-    , mtl
   default-language: Haskell2010
 
 test-suite vsc-test
