@@ -49,6 +49,8 @@ executables:
     - text
     - system-fileio
     - containers
+    - parsec
+    - either
 
 tests:
   vsc-test:

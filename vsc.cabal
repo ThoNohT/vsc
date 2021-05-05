@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d72d99486be9ed7815521809d79c80ed0cc14b28938edad4450505e3b3e77dab
+-- hash: 19d7f13f3dd01c2569916354bd0d0af53c63d6a05f1eef157472cd8d43955f68
 
 name:           vsc
 version:        0.1.0.0
@@ -30,8 +30,10 @@ source-repository head
 executable vsc
   main-is: Main.hs
   other-modules:
+      Console
       Environment
       Task
+      Task.NewProfile
       Paths_vsc
   hs-source-dirs:
       app
@@ -40,6 +42,8 @@ executable vsc
   build-depends:
       base >=4.7 && <5
     , containers
+    , either
+    , parsec
     , system-fileio
     , system-filepath
     , text
