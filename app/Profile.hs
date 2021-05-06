@@ -37,7 +37,7 @@ start profile@(MkProfile path) =
      in do
             putStrLn $ printf "Starting profile %s" $ name profile
             putStrLn command
-            _ <- Proc.createProcess $ Proc.shell $ command
+            _ <- Proc.runCommand command
             pure ()
 start (MkTemplate p) = putStrLn "Templates are not yet supported."
 
