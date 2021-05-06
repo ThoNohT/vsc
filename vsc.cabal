@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aa3ba0e750568d985bbb01d9f94f759456730cbce2c311a172b35474873e3242
+-- hash: bbc8dd73b30be782f2a1d7410e8c23157a89d86ec7e93705d0af07d99c6d83a1
 
 name:           vsc
 version:        0.1.0.0
@@ -45,6 +45,7 @@ executable vsc
     , containers
     , either
     , parsec
+    , process
     , system-fileio
     , system-filepath
     , text

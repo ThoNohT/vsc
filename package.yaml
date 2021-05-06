@@ -51,6 +51,7 @@ executables:
     - containers
     - parsec
     - either
+    - process
 
 tests:
   vsc-test:
