@@ -8,4 +8,4 @@ main :: IO ()
 main = do
     basePath <- getBasePath
     ensureBasePathExists basePath
-    pickTask basePath >>= runTask
+    pickTask basePath >>= runTask basePath

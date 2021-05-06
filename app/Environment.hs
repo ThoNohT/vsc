@@ -4,7 +4,7 @@ import Control.Arrow ((>>>))
 import Data.Functor ((<&>))
 import Data.Text (Text)
 import qualified Data.Text as T
-import Filesystem (getHomeDirectory, isDirectory, createTree)
+import Filesystem (createTree, getHomeDirectory, isDirectory)
 import qualified Filesystem.Path.CurrentOS as FP (FilePath, append, encodeString, fromText)
 
 -- Returns the name of the folder or file represented by the file path, without the leading path to it.
