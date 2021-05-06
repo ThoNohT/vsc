@@ -36,7 +36,6 @@ start profile@(MkProfile path) =
         command = printf "code --extensions-dir %s --user-data-dir %s ." extsPath dataPath
      in do
             putStrLn $ printf "Starting profile %s" $ name profile
-            putStrLn command
             _ <- Proc.runCommand command
             pure ()
 start (MkTemplate p) = putStrLn "Templates are not yet supported."
