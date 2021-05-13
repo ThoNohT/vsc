@@ -1,12 +1,12 @@
-module Profile (Profile, create, list, name, start) where
+module Profile (Profile, create, delete, list, profileName, start) where
 
 import Control.Arrow ((>>>))
 import Data.Functor ((<&>))
 import Data.List (sort)
 import Data.Text (Text)
 import qualified Data.Text as T (isPrefixOf, pack)
-import Environment (baseName)
-import Filesystem (createTree, isDirectory, listDirectory)
+import Environment (ProfileType, baseName, subdir, typeName)
+import Filesystem (copyFile, createTree, isDirectory, listDirectory, removeTree)
 import qualified Filesystem.Path.CurrentOS as FP (FilePath, append, encodeString, fromText)
 import NewProfile (NewProfile (..))
 import qualified System.Process as Proc
@@ -15,46 +15,55 @@ import Text.Printf (printf)
 -- Public
 
 -- A profile that definitely exists.
-data Profile
-    = MkProfile FP.FilePath
-    | MkTemplate FP.FilePath
+data Profile = MkProfile ProfileType FP.FilePath
 
 -- Creates a profile from a new profile, returns the existing profile.
-create :: NewProfile -> IO Profile
-create (MkNewProfile path) = do
+create :: Maybe Profile -> NewProfile -> IO Profile
+create copySource (MkNewProfile pType path) = do
     createTree path
-    pure $ MkProfile path
-create (MkNewTemplate path) = do
-    putStrLn "Templates are not yet supported."
-    pure undefined
+    case copySource of
+        Just (MkProfile _ sourcePath) ->
+            copyFile sourcePath path
+        _ -> pure ()
+
+    pure $ MkProfile pType path
+
+-- Deletes a profile.
+delete :: Profile -> IO ()
+delete profile = do
+    removeTree $ profilePath profile
+    putStrLn $ printf "Deleted %s %s" (typeName . profileType $ profile) (profileName profile)
 
 -- Starts a profile.
 start :: Profile -> IO ()
-start profile@(MkProfile path) =
+start profile@(MkProfile _ path) =
     let extsPath = FP.encodeString $ FP.append path (FP.fromText "exts")
         dataPath = FP.encodeString $ FP.append path (FP.fromText "data")
         command = printf "code --extensions-dir %s --user-data-dir %s ." extsPath dataPath
      in do
-            putStrLn $ printf "Starting profile %s" $ name profile
+            putStrLn $
+                printf "Starting %s %s" (typeName . profileType $ profile) (profileName profile)
             _ <- Proc.runCommand command
             pure ()
-start (MkTemplate p) = putStrLn "Templates are not yet supported."
 
--- Lists all profiles in a path.
-list :: FP.FilePath -> IO [Profile]
-list path =
-    listDirectory path
+-- Lists all profiles in the sub-directory of a path.
+list :: FP.FilePath -> ProfileType -> IO [Profile]
+list path pType =
+    listDirectory (FP.append path (subdir pType))
         <&> filter (not . T.isPrefixOf "." . baseName)
         <&> sort
-        <&> map MkProfile
+        <&> map (MkProfile pType)
 
 -- Retrieves the name of a profile.
-name :: Profile -> Text
-name = profilePath >>> baseName
+profileName :: Profile -> Text
+profileName = profilePath >>> baseName
 
 -- Private
 
+-- Retrieves the type of a profile.
+profileType :: Profile -> ProfileType
+profileType (MkProfile t _) = t
+
 -- Extract the path from a profile.
 profilePath :: Profile -> FP.FilePath
-profilePath (MkProfile p) = p
-profilePath (MkTemplate p) = p
+profilePath (MkProfile _ p) = p

@@ -1,4 +1,4 @@
-module Environment (baseName, ensureBasePathExists, getBasePath) where
+module Environment (ProfileType (..), baseName, ensureBasePathExists, getBasePath, subdir, typeName) where
 
 import Control.Arrow ((>>>))
 import Data.Functor ((<&>))
@@ -19,9 +19,25 @@ getBasePath = getHomeDirectory <&> flip FP.append (FP.fromText ".code-profiles")
 -- Checks whether the base path exists. If it doesn't, it is created.
 ensureBasePathExists :: FP.FilePath -> IO ()
 ensureBasePathExists basePath = do
-    isDir <- isDirectory basePath
+    ensurePathExists $ FP.append basePath $ subdir ProfileType
+    ensurePathExists $ FP.append basePath $ subdir TemplateType
+
+ensurePathExists :: FP.FilePath -> IO ()
+ensurePathExists path = do
+    isDir <- isDirectory path
     if not isDir
         then do
-            putStrLn "Creating base path"
-            createTree basePath
+            putStrLn $ "Creating path: " ++ FP.encodeString path
+            createTree path
         else pure ()
+
+data ProfileType = ProfileType | TemplateType
+
+typeName :: ProfileType -> String
+typeName ProfileType = "profile"
+typeName TemplateType = "template"
+
+-- The sub-directory in the base path where the profiles or templates live.
+subdir :: ProfileType -> FP.FilePath
+subdir ProfileType = "profiles"
+subdir TemplateType = "templates"
