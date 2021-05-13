@@ -11,6 +11,8 @@ import qualified Filesystem.Path.CurrentOS as FP (FilePath, append, encodeString
 import NewProfile (NewProfile (..))
 import qualified System.Process as Proc
 import Text.Printf (printf)
+import Path.IO (copyDirRecur)
+import Path.Internal (Path(Path))
 
 -- Public
 
@@ -19,14 +21,14 @@ data Profile = MkProfile ProfileType FP.FilePath
 
 -- Creates a profile from a new profile, returns the existing profile.
 create :: Maybe Profile -> NewProfile -> IO Profile
-create copySource (MkNewProfile pType path) = do
-    createTree path
+create copySource (MkNewProfile pType newPath) = do
+    createTree newPath
     case copySource of
         Just (MkProfile _ sourcePath) ->
-            copyFile sourcePath path
+            copyDirRecur (Path $ FP.encodeString sourcePath) (Path $ FP.encodeString newPath)
         _ -> pure ()
 
-    pure $ MkProfile pType path
+    pure $ MkProfile pType newPath
 
 -- Deletes a profile.
 delete :: Profile -> IO ()
