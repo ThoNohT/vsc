@@ -1,6 +1,6 @@
 module Task (Task (..), pickTask, runTask) where
 
-import Console (requestM, request_)
+import Console (readLine, requestM, request_)
 import Control.Monad (forM_)
 import Data.Either (isRight)
 import Data.Either.Combinators (rightToMaybe)
@@ -8,12 +8,13 @@ import Data.Function ((&))
 import Data.Functor ((<&>))
 import Data.Map (toList)
 import Data.Map.Strict as Map (Map, fromList, lookup)
+import Data.Maybe (fromMaybe)
 import Data.Text as T (Text, isPrefixOf)
 import Environment (ProfileType (..), baseName, getBasePath, subdir, typeName)
 import Filesystem (listDirectory)
 import qualified Filesystem.Path.CurrentOS as FP (FilePath)
 import GHC.Exts (sortWith)
-import NewProfile (NewProfile, getNewProfile)
+import NewProfile (NewProfile, getNewProfile, newProfileName)
 import Profile (Profile)
 import qualified Profile
 import Text.Parsec (char, digit, eof, many, oneOf, parse, (<|>))
@@ -75,7 +76,15 @@ pickProfile basePath pType = do
 pickManageTask :: FP.FilePath -> IO Task
 pickManageTask basePath = do
     request_
-        (Just "np: New profile\ndp: Delete profile\nnt: New template\ndt: Delete template\nst: Start template")
+        ( Just $
+            unlines
+                [ "np: New profile"
+                , "dp: Delete profile"
+                , "nt: New template"
+                , "dt: Delete template"
+                , "st: Start template"
+                ]
+        )
         Nothing
         parseManageTask
 
@@ -84,27 +93,42 @@ pickTemplateToCopy basePath = do
     templates <- Profile.list basePath TemplateType <&> zip [1 ..]
     let templateMap = fromList templates
     templates & forM_ $ \(idx, t) -> putStrLn $ printf "%d: %s" idx (Profile.profileName t)
-    source <-
-        request_
+    rightToMaybe
+        <$> request_
             (Just "Copy from a template? (n to start with empty profile)")
             Nothing
             (parseTemplateForProfile templateMap)
-    pure $ rightToMaybe source
 
 -- Runs a task.
 runTask :: FP.FilePath -> Task -> IO ()
 runTask basePath NewTemplate =
     requestM (Just "Please provide a name for the new template") (getNewProfile basePath TemplateType)
+        >>= readLine (printf "Press Enter to confirm: create template %s." . newProfileName)
         >>= Profile.create Nothing
         >>= Profile.start
 runTask basePath NewProfile = do
     name <- requestM (Just "Please provide a name for the new profile") (getNewProfile basePath ProfileType)
-    source <- pickTemplateToCopy basePath
+    source <-
+        pickTemplateToCopy basePath
+            >>= readLine
+                ( printf "Press Enter to confirm: make a new profile %s from %s." (newProfileName name)
+                    . maybe "scratch" Profile.profileName
+                )
     Profile.create source name >>= Profile.start
 runTask basePath (StartProfile profile) = Profile.start profile
 runTask basePath Manage = pickManageTask basePath >>= runTask basePath
 runTask basePath StartTemplate = pickProfile basePath TemplateType >>= runTask basePath . StartProfile
-runTask basePath (DeleteProfile pType) = pickProfile basePath pType >>= Profile.delete >>= restart basePath
+runTask basePath (DeleteProfile pType) =
+    pickProfile basePath pType
+        >>= readLine
+            ( \p ->
+                printf
+                    "Press Enter to confirm: delete the %s %s."
+                    (typeName $ Profile.profileType p)
+                    (Profile.profileName p)
+            )
+        >>= Profile.delete
+        >>= restart basePath
 
 -- Restarts picking and running a task after a task is completed.
 -- Should only be used by tasks that don't actually start VS Code.

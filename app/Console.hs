@@ -1,4 +1,4 @@
-module Console (request, requestM, request_) where
+module Console (request, requestM, request_, readLine) where
 
 import Control.Arrow ((>>>))
 import Control.Monad.IO.Class (MonadIO (liftIO))
@@ -35,3 +35,11 @@ requestM msgBefore parser = do
     handleError mErr = do
         liftIO $ sequence_ $ putStrLn <$> (mErr <|> msgBefore)
         getInput
+
+-- Reads a line from the console after printing the specified message.
+-- Returns the input value after enter is pressed.
+readLine :: (a -> String) -> a -> IO a
+readLine msg v = do
+    putStrLn (msg v)
+    _ <- getLine
+    pure v

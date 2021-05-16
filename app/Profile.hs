@@ -1,4 +1,4 @@
-module Profile (Profile, create, delete, list, profileName, start) where
+module Profile (Profile, create, delete, list, profileName, profileType, start) where
 
 import Control.Arrow ((>>>))
 import Data.Functor ((<&>))
@@ -60,11 +60,11 @@ list path pType =
 profileName :: Profile -> Text
 profileName = profilePath >>> baseName
 
--- Private
-
 -- Retrieves the type of a profile.
 profileType :: Profile -> ProfileType
 profileType (MkProfile t _) = t
+
+-- Private
 
 -- Extract the path from a profile.
 profilePath :: Profile -> FP.FilePath

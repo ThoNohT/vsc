@@ -1,4 +1,4 @@
-module NewProfile (NewProfile (..), getNewProfile) where
+module NewProfile (NewProfile (..), getNewProfile, newProfileName) where
 
 import Control.Arrow ((>>>))
 import Data.Either.Combinators (rightToMaybe)
@@ -36,6 +36,10 @@ getNewProfile path pType name =
                     then Left $ Just "A profile with this name already exists."
                     else Right newProfile
 
+-- Retrieves the name of a new profile.
+newProfileName :: NewProfile -> Text
+newProfileName = newProfilePath >>> baseName
+
 -- Private
 
 -- Creates a new profile with the specified name in the specified path.
@@ -46,10 +50,6 @@ mkNewProfileInPath basePath pType =
 -- Extract the path from a new profile.
 newProfilePath :: NewProfile -> FP.FilePath
 newProfilePath (MkNewProfile _ p) = p
-
--- Retrieves the name of a new profile.
-newProfileName :: NewProfile -> Text
-newProfileName = newProfilePath >>> baseName
 
 -- Checks whether a new profile exists.
 exists :: NewProfile -> IO Bool
