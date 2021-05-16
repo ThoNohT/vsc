@@ -9,10 +9,10 @@ import Environment (ProfileType, baseName, subdir, typeName)
 import Filesystem (copyFile, createTree, isDirectory, listDirectory, removeTree)
 import qualified Filesystem.Path.CurrentOS as FP (FilePath, append, encodeString, fromText)
 import NewProfile (NewProfile (..))
+import Path.IO (copyDirRecur)
+import Path.Internal (Path (Path))
 import qualified System.Process as Proc
 import Text.Printf (printf)
-import Path.IO (copyDirRecur)
-import Path.Internal (Path(Path))
 
 -- Public
 

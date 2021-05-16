@@ -32,9 +32,7 @@ data Task
 
 -- Parses a number corresponding to a profile in the provided map. If no number matches, Nothing is returned.
 parseProfileNumber :: Map Int Profile -> String -> Maybe Profile
-parseProfileNumber profiles text = number >>= (`Map.lookup` profiles)
-  where
-    number = readMaybe text :: Maybe Int
+parseProfileNumber profiles text = readMaybe text >>= (`Map.lookup` profiles)
 
 -- Parses a template that can be used to copy into a profile, or the input 'n' that means
 -- no template should be copied.
@@ -50,9 +48,9 @@ parseTask profiles other = parseProfileNumber profiles other <&> StartProfile
 -- parses a string into a task for managing profiles and templates. If a task can be parsed, it is returned, otherwise
 -- Nothing is returned.
 parseManageTask :: String -> Maybe Task
-parseManageTask "np" = Just $ NewProfile
+parseManageTask "np" = Just NewProfile
 parseManageTask "dp" = Just $ DeleteProfile ProfileType
-parseManageTask "nt" = Just $ NewTemplate
+parseManageTask "nt" = Just NewTemplate
 parseManageTask "dt" = Just $ DeleteProfile TemplateType
 parseManageTask "st" = Just StartTemplate
 parseManageTask _ = Nothing
