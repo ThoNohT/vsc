@@ -4,15 +4,15 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3fcce3d43709e4c70a8dfb61aab5b3bc9c49f49409a751f947035249c91e1939
+-- hash: c43993a8f20999cf26c5f5c8386282438dd32e6d2925cf63f2b9416284388aa5
 
 name:           vsc
-version:        0.1.0.0
+version:        1.0.0.0
 synopsis:       Visual Studio Code profile management tool
 description:    Please see the README on GitHub at <https://github.com/ThoNohT/vsc#readme>
 category:       Terminal
-homepage:       https://github.com/githubuser/vsc#readme
-bug-reports:    https://github.com/githubuser/vsc/issues
+homepage:       https://github.com/ThoNohT/vsc#readme
+bug-reports:    https://github.com/ThoNohT/vsc/issues
 author:         ThoNohT
 maintainer:     e.c.p.bataille@gmail.com
 copyright:      2021 ThoNohT
@@ -25,7 +25,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/vsc
+  location: https://github.com/ThoNohT/vsc
 
 executable vsc
   main-is: Main.hs
