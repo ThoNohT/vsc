@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c43993a8f20999cf26c5f5c8386282438dd32e6d2925cf63f2b9416284388aa5
+-- hash: b6451e15c95a16e8c92644fbdf05d4afbfde590a1e630029e0978f293a090f42
 
 name:           vsc
-version:        1.0.0.0
+version:        1.0.1.0
 synopsis:       Visual Studio Code profile management tool
 description:    Please see the README on GitHub at <https://github.com/ThoNohT/vsc#readme>
 category:       Terminal
